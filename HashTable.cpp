@@ -10,6 +10,8 @@ struct Student{ // creates the structure student
   char lastName[20];
   int id;
   float gpa;
+  Student* connection = NULL;
+
 };
 //void Add(Student** hashTable, char** firstName, char** lastName); // initializes the function
 void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID);
@@ -146,8 +148,16 @@ void Subtract(vector<Student*>* v){ // deletes the student from the vector
 void Print(Student** hashTable, int size){ // prints all the students in the vector
   Student* print = NULL;
   for(int i = 0; i < size; i++) {
-				  
-				 // if()
-				  }
+       print = hashTable[i];
+    while(print != NULL) {
+      cout << "Space: " << i << ", ";
+      cout << "Name: " << (*print).firstName << " " << (*print).lastName << ", ";
+      cout << "id: " << (*print).id << ", ";
+      cout << "gpa: " << (*print).gpa << endl;
+      
+      print = (*print).connection;
+    } 
+				 
+   }
 
 }
