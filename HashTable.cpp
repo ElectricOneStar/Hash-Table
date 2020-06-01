@@ -11,9 +11,11 @@ struct Student{ // creates the structure student
   int id;
   float gpa;
 };
-void Add(Student** hashTable, char** firstName, char** lastName); // initializes the function
+//void Add(Student** hashTable, char** firstName, char** lastName); // initializes the function
+void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID);
 void Subtract(vector<Student*>* v);
-void Print(vector<Student*>* v);
+//void Print(vector<Student*>* v);
+void Print(Student** hashTable, int size);
 int main() { // main function
   bool stop = false; // initializes the variables
   char stopChar;
@@ -22,7 +24,8 @@ int main() { // main function
   char input[20];
   char quit[5];
   bool invalid = false;
-  //int ID;
+  int ID = 0;
+  int size = 100;
   //int GPA;
   Student** hashTable = new Student*[100];
     do{ // Continues running the programm until the QUIT funciton
@@ -100,6 +103,7 @@ int main() { // main function
 		cout << "could not add" << endl;
 	      }
 	      else{
+		Add(hashTable, FirstCollection, LastCollection,  numberofnames, ID);
 		cout << "added" << endl;
 		}
 	      invalid = false;
@@ -112,7 +116,7 @@ int main() { // main function
 	    }
 	    else if(strcmp(input, "Print") == 0){ // PRINT function
       //cout << "Print" << endl;
-
+	      Print(hashTable, size);
 	     
 	    }
 	    else{
@@ -123,11 +127,27 @@ int main() { // main function
     while(stop == false); // keeps going while stop is false
 	  return 0;
 }
-void Add(Student** hashTable, char** firstName, char** lastName){ // creates the student pointer to add to vector
-  
+void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID){ // creates the student pointer to add to vector
+   for(int i = 0; i < numberofnames; i++) {
+     Student* newStudent = new Student();
+     int firstRandom = rand() % 19;
+          strcpy(newStudent -> firstName, firstNameCollection[firstRandom]); 
+      int lastRandom = rand() % 21;
+      strcpy(newStudent -> lastName, lastNameCollection[lastRandom]);
+      ID++;
+      (*newStudent).id = ID;
+     float ingpa = (float)rand()/(RAND_MAX)*5; //randoms double 0 - 5
+     (*newStudent).gpa = ingpa;
+   }
  }
 void Subtract(vector<Student*>* v){ // deletes the student from the vector
 
 }
-void Print(vector<Student*>* v){ // prints all the students in the vector
+void Print(Student** hashTable, int size){ // prints all the students in the vector
+  Student* print = NULL;
+  for(int i = 0; i < size; i++) {
+				  
+				 // if()
+				  }
+
 }
