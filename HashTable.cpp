@@ -1,3 +1,4 @@
+// source: https://www.hackerearth.com/practice/data-structures/hash-tables/basics-of-hash-tables/tutorial/
 #include <iostream> // initializes libraries
 #include <cstring>
 #include <vector>
@@ -17,6 +18,7 @@ struct Student{ // creates the structure student
 void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID);
 void Subtract(vector<Student*>* v);
 //void Print(vector<Student*>* v);
+int hash(int ID, int size);
 void Print(Student** hashTable, int size);
 int main() { // main function
   bool stop = false; // initializes the variables
@@ -133,13 +135,14 @@ void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollect
    for(int i = 0; i < numberofnames; i++) {
      Student* newStudent = new Student();
      int firstRandom = rand() % 19;
-          strcpy(newStudent -> firstName, firstNameCollection[firstRandom]); 
+     strcpy((*newStudent).firstName, firstNameCollection[firstRandom]); 
       int lastRandom = rand() % 21;
-      strcpy(newStudent -> lastName, lastNameCollection[lastRandom]);
+      strcpy((*newStudent).lastName, lastNameCollection[lastRandom]);
       ID++;
       (*newStudent).id = ID;
      float ingpa = (float)rand()/(RAND_MAX)*5; //randoms double 0 - 5
      (*newStudent).gpa = ingpa;
+
    }
  }
 void Subtract(vector<Student*>* v){ // deletes the student from the vector
@@ -160,4 +163,18 @@ void Print(Student** hashTable, int size){ // prints all the students in the vec
 				 
    }
 
+}
+int hash(int ID, int size){
+  int sum;
+  sum = 0;
+  int starting = ID;
+  for (int i = 0; i < 6; i++) {
+    sum += sum + starting % 10; 
+    starting = starting/10; 
+  }
+  int save = ID * sum; 
+  int position = save % size;
+  return position; 
+
+  
 }
