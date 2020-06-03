@@ -15,10 +15,11 @@ struct Student{ // creates the structure student
 
 };
 //void Add(Student** hashTable, char** firstName, char** lastName); // initializes the function
-void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID);
+void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID, int& size);
 void Subtract(vector<Student*>* v);
 //void Print(vector<Student*>* v);
-int hash(int ID, int size);
+//int hash(int ID, int size);
+int initialhash(int ID, int size);
 void Print(Student** hashTable, int size);
 int main() { // main function
   bool stop = false; // initializes the variables
@@ -107,7 +108,7 @@ int main() { // main function
 		cout << "could not add" << endl;
 	      }
 	      else{
-		Add(hashTable, FirstCollection, LastCollection,  numberofnames, ID);
+		Add(hashTable, FirstCollection, LastCollection,  numberofnames, ID, size);
 		cout << "added" << endl;
 		}
 	      invalid = false;
@@ -131,8 +132,9 @@ int main() { // main function
     while(stop == false); // keeps going while stop is false
 	  return 0;
 }
-void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID){ // creates the student pointer to add to vector
+void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID, int& size){ // creates the student pointer to add to vector
    for(int i = 0; i < numberofnames; i++) {
+     bool collision = false;
      Student* newStudent = new Student();
      int firstRandom = rand() % 19;
      strcpy((*newStudent).firstName, firstNameCollection[firstRandom]); 
@@ -140,8 +142,26 @@ void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollect
       strcpy((*newStudent).lastName, lastNameCollection[lastRandom]);
       ID++;
       (*newStudent).id = ID;
-     float ingpa = (float)rand()/(RAND_MAX)*5; //randoms double 0 - 5
+     float ingpa = (float)rand()/(RAND_MAX)*5; 
      (*newStudent).gpa = ingpa;
+     int space;
+     space = initialhash(ID, size); 
+    if (hashTable[space] == NULL) {
+      hashTable[space] = newStudent; 
+    }
+    else {
+      int counter = 0;
+      Student* chain = hashTable[space]; 
+      while((*chain).connection != NULL) { 
+	counter++;
+	chain = (*chain).connection;
+      }
+      counter++;  
+      (*chain).connection = newStudent; 
+      if(counter > 2) { 
+	collision = true;
+      }
+    }
 
    }
  }
@@ -156,15 +176,15 @@ void Print(Student** hashTable, int size){ // prints all the students in the vec
       cout << "Space: " << i << ", ";
       cout << "Name: " << (*print).firstName << " " << (*print).lastName << ", ";
       cout << "id: " << (*print).id << ", ";
-      cout << "gpa: " << (*print).gpa << endl;
-      
+      //   cout << "gpa: " << (*print).gpa << endl;
+      cout << "gpa: " << fixed << setprecision(2) << (*print).gpa << endl;
       print = (*print).connection;
     } 
 				 
    }
 
 }
-int hash(int ID, int size){
+int initialhash(int ID, int size){
   int sum;
   sum = 0;
   int starting = ID;
