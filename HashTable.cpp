@@ -213,10 +213,13 @@ void Subtract(vector<Student*>* v){ // deletes the student from the vector
 
 }
 void Print(Student** hashTable, int size){ // prints all the students in the vector
+  int* numberOfStudents = new int;
+  (*numberOfStudents) = 0;
   Student* print = NULL;
   for(int i = 0; i < size; i++) {
        print = hashTable[i];
     while(print != NULL) {
+      (*numberOfStudents)++;
       cout << "Space: " << i << ", ";
       cout << "Name: " << (*print).firstName << " " << (*print).lastName << ", ";
       cout << "ID: " << (*print).id << ", ";
@@ -226,7 +229,8 @@ void Print(Student** hashTable, int size){ // prints all the students in the vec
     } 
 				 
    }
-
+  cout << "The Hash Table is " << size << " Spaces long" << endl;
+  cout << "The Hash Table has " << (*numberOfStudents) << " students" << endl;
 }
 int initialhash(int ID, int size){
   int sum;
