@@ -15,12 +15,13 @@ struct Student{ // creates the structure student
 
 };
 //void Add(Student** hashTable, char** firstName, char** lastName); // initializes the function
-void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID, int& size);
+Student** Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID, int& size);
 void Subtract(vector<Student*>* v);
 //void Print(vector<Student*>* v);
 //int hash(int ID, int size);
 int initialhash(int ID, int size);
 void Print(Student** hashTable, int size);
+Student** ReHash(Student** hashTable, int& size);
 int main() { // main function
   bool stop = false; // initializes the variables
   char stopChar;
@@ -108,7 +109,7 @@ int main() { // main function
 		cout << "could not add" << endl;
 	      }
 	      else{
-		Add(hashTable, FirstCollection, LastCollection,  numberofnames, ID, size);
+		hashTable = Add(hashTable, FirstCollection, LastCollection,  numberofnames, ID, size);
 		cout << "added" << endl;
 		}
 	      invalid = false;
@@ -132,9 +133,10 @@ int main() { // main function
     while(stop == false); // keeps going while stop is false
 	  return 0;
 }
-void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID, int& size){ // creates the student pointer to add to vector
-   for(int i = 0; i < numberofnames; i++) {
-     bool collision = false;
+Student** Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID, int& size){ // creates the student pointer to add to vector
+  bool collision = false;
+  for(int i = 0; i < numberofnames; i++) {
+     // bool collision = false;
      Student* newStudent = new Student();
      int firstRandom = rand() % 19;
      strcpy((*newStudent).firstName, firstNameCollection[firstRandom]); 
@@ -162,9 +164,23 @@ void Add(Student** hashTable, char** firstNameCollection, char** lastNameCollect
 	collision = true;
       }
     }
-
+    
    }
- }
+    if(collision == true) { 
+    hashTable = ReHash(hashTable, size); 
+  }
+  int fillingSize = 0;
+  for(int j = 0; j < size; j++) {
+    if(hashTable[j] != NULL) {
+      fillingSize++; 
+    }
+  }
+  
+  if (fillingSize > size/2) { //if more than halfway full
+    hashTable = ReHash(hashTable, size);//rehash
+  }
+  return hashTable;
+}
 void Subtract(vector<Student*>* v){ // deletes the student from the vector
 
 }
@@ -197,4 +213,54 @@ int initialhash(int ID, int size){
   return position; 
 
   
+}
+Student** ReHash(Student** hashTable, int& size){
+  int loop = size;
+  bool collision = false;
+  size = size + 100;
+  Student** newHashTable = new Student*[size];
+    for(int i = 0; i < size; i++) {
+    newHashTable[i] = NULL; 
+  }
+    for(int i = 0; i < loop; i++){
+      if(hashTable[i] != NULL){
+	Student* studentHolder = hashTable[i];
+	do{
+	  Student* connectionHolder = (*studentHolder).connection;
+	  (*studentHolder).connection = NULL;
+	  int place = initialhash((*studentHolder).id, size);
+	  if(newHashTable[place] == NULL){
+	    newHashTable[place] = studentHolder;
+	  }
+	  else{
+	    int counter = 0;
+	    Student* chaining = newHashTable[place];
+	    while((*chaining).connection != NULL){
+	      counter++;
+	      chaining = (*chaining).connection;
+	    }
+	    (*chaining).connection = studentHolder;
+	    counter++;
+	    if(counter > 2){
+	      collision = true;
+	    }
+	  }
+	  studentHolder = connectionHolder;
+	}
+	while(studentHolder != NULL);
+      }
+    }
+    if(collision){
+      newHashTable = ReHash(newHashTable, size);
+    }
+    int fillingSize;
+    for(int i = 0; i < size; i++){
+      if(newHashTable[i] != NULL){
+	fillingSize++;
+      }
+    }
+    if(fillingSize > size/2){
+      newHashTable = ReHash(newHashTable, size);
+    }
+    return newHashTable;
 }
