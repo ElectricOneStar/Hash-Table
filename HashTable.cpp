@@ -22,6 +22,8 @@ void Subtract(vector<Student*>* v);
 int initialhash(int ID, int size);
 void Print(Student** hashTable, int size);
 Student** ReHash(Student** hashTable, int& size);
+Student** ManualAdd(Student** hashTable, char* firstName, char* lastName, int& MID, int& size, float GPA); // creates the student pointer to add to vector
+
 int main() { // main function
   bool stop = false; // initializes the variables
   char stopChar;
@@ -32,15 +34,19 @@ int main() { // main function
   bool invalid = false;
   int ID = 0;
   int size = 100;
+  char* MFirst = new char[20];
+  char* MLast = new char[20];
+  int MID;
+  float MGPA;
   //int GPA;
   Student** hashTable = new Student*[100];
     do{ // Continues running the programm until the QUIT funciton
-	    cout << "Enter a function: Add, Print Delete, Quit" << endl;
+	    cout << "Enter a function: Random Add, Manual Add, Print, Delete, Quit" << endl;
     // cout << "are you sure you want to quit y/n" << endl;
 	    cin.get(input, 20); // asks and gets input
 	    cin.clear();
 	    cin.ignore();
-	    if(strcmp(input, "Add") == 0){ // ADD function
+	    if(strcmp(input, "Random Add") == 0){ // ADD function
 	      int numberofnames;
 	      cout << "how many students would you like to add?" << endl;
 	      cin >> numberofnames;
@@ -113,7 +119,29 @@ int main() { // main function
 		cout << "added" << endl;
 		}
 	      invalid = false;
-		} 
+		}
+	    else if(strcmp(input, "Manual Add") == 0){
+
+	      cout << "What is the first name of the student" << endl;
+	      cin.get(MFirst, 20);
+	      cin.clear();
+	      cin.ignore();
+	      cout << "What is the last name of the student" << endl;
+	      cin.get(MLast, 20);
+	      cin.clear();
+	      cin.ignore();
+	      //  cout << "What is the ID of the student" << endl;
+	      //cin >> MID;
+	      //cin.clear();
+	      //cin.ignore();
+	      cout << "What is the GPA of the student" << endl;
+	      cin >> MGPA;
+	      cin.clear();
+	      cin.ignore();
+	    
+	      hashTable = ManualAdd(hashTable, MFirst, MLast, ID, size, MGPA);
+	      cout << "added" << endl;
+	    }
 	    else if(strcmp(input, "Delete") == 0){ // DELETE function
 
 	    }
@@ -191,9 +219,9 @@ void Print(Student** hashTable, int size){ // prints all the students in the vec
     while(print != NULL) {
       cout << "Space: " << i << ", ";
       cout << "Name: " << (*print).firstName << " " << (*print).lastName << ", ";
-      cout << "id: " << (*print).id << ", ";
+      cout << "ID: " << (*print).id << ", ";
       //   cout << "gpa: " << (*print).gpa << endl;
-      cout << "gpa: " << fixed << setprecision(2) << (*print).gpa << endl;
+      cout << "GPA: " << fixed << setprecision(2) << (*print).gpa << endl;
       print = (*print).connection;
     } 
 				 
@@ -263,4 +291,52 @@ Student** ReHash(Student** hashTable, int& size){
       newHashTable = ReHash(newHashTable, size);
     }
     return newHashTable;
+}
+Student** ManualAdd(Student** hashTable, char* firstName, char* lastName, int& ID, int& size, float GPA){ // creates the student pointer to add to vector
+  bool collision = false;
+  // for(int i = 0; i < numberofnames; i++) {
+     // bool collision = false;
+     Student* newStudent = new Student();
+     //    int firstRandom = rand() % 19;
+     strcpy((*newStudent).firstName, firstName); 
+     //  int lastRandom = rand() % 21;
+      strcpy((*newStudent).lastName, lastName);
+      ID++;
+      (*newStudent).id = ID;
+      //  float ingpa = (float)rand()/(RAND_MAX)*5; 
+     (*newStudent).gpa = GPA;
+     int space;
+     space = initialhash(ID, size); 
+    if (hashTable[space] == NULL) {
+      hashTable[space] = newStudent; 
+    }
+    else {
+      int counter = 0;
+      Student* chain = hashTable[space]; 
+      while((*chain).connection != NULL) { 
+	counter++;
+	chain = (*chain).connection;
+      }
+      counter++;  
+      (*chain).connection = newStudent; 
+      if(counter > 2) { 
+	collision = true;
+      }
+    }
+    
+    //}
+    if(collision == true) { 
+    hashTable = ReHash(hashTable, size); 
+  }
+  int fillingSize = 0;
+  for(int j = 0; j < size; j++) {
+    if(hashTable[j] != NULL) {
+      fillingSize++; 
+    }
+  }
+  
+  if (fillingSize > size/2) { //if more than halfway full
+    hashTable = ReHash(hashTable, size);//rehash
+  }
+  return hashTable;
 }
