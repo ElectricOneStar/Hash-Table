@@ -1,22 +1,26 @@
+/*
+Hash Table By Andrew Thomas 6/4/2020  Mr.Galbriath's C++ class. This code has a hash list of students that spreads the students throughout the table and when the table is half full or there is too many collisions then the table exands and spreads the students to the new table. You can random add students. Just choose how many students you want to add. You can manually add students. you can remove students from the list and you can also type quit to exit the program.  
+*/
 // source: https://www.hackerearth.com/practice/data-structures/hash-tables/basics-of-hash-tables/tutorial/
 #include <iostream> // initializes libraries
 #include <cstring>
-#include <vector>
+//#include <vector>
 #include <cmath>
 #include <iomanip>
 #include <fstream>
 using namespace std; // uses namespace std
 struct Student{ // creates the structure student
-  char firstName[20]; // initializes variables
+  char firstName[20]; // initializes variables of students
   char lastName[20];
   int id;
   float gpa;
-  Student* connection = NULL;
+  Student* connection = NULL; // linked list connections to rehash the list
 
-};
+}; // functions
 //void Add(Student** hashTable, char** firstName, char** lastName); // initializes the function
 Student** Add(Student** hashTable, char** firstNameCollection, char** lastNameCollection, int numberofnames, int& ID, int& size);
-void Subtract(vector<Student*>* v);
+//void Subtract(vector<Student*>* v);
+void Subtract(Student** hashTable, int deleteID, int size);
 //void Print(vector<Student*>* v);
 //int hash(int ID, int size);
 int initialhash(int ID, int size);
@@ -46,7 +50,7 @@ int main() { // main function
 	    cin.get(input, 20); // asks and gets input
 	    cin.clear();
 	    cin.ignore();
-	    if(strcmp(input, "Random Add") == 0){ // ADD function
+	    if(strcmp(input, "Random Add") == 0){ // ADD functi2on
 	      int numberofnames;
 	      cout << "how many students would you like to add?" << endl;
 	      cin >> numberofnames;
@@ -143,7 +147,12 @@ int main() { // main function
 	      cout << "added" << endl;
 	    }
 	    else if(strcmp(input, "Delete") == 0){ // DELETE function
-
+	      cout << "please enter the ID of the student you want to delete" << endl;
+	      int deleteID = 0;
+	      cin >> deleteID;
+	      cin.clear();
+	      cin.ignore();
+	      Subtract(hashTable, deleteID, size);
 	    }
 	    else if(strcmp(input, "Quit") == 0){ // QUIT function
 	      stop = true; // sets the stop boolean to true
@@ -189,7 +198,7 @@ Student** Add(Student** hashTable, char** firstNameCollection, char** lastNameCo
       counter++;  
       (*chain).connection = newStudent; 
       if(counter > 2) { 
-	collision = true;
+		collision = true;
       }
     }
     
@@ -209,9 +218,51 @@ Student** Add(Student** hashTable, char** firstNameCollection, char** lastNameCo
   }
   return hashTable;
 }
-void Subtract(vector<Student*>* v){ // deletes the student from the vector
-
+void Subtract(Student** hashTable, int deleteID, int size){ // deletes the student from the vector
+  int location = initialhash(deleteID, size);
+  if(hashTable[location] != NULL){
+    Student* chaining = hashTable[location];
+  
+  if((*chaining).connection == NULL){
+    if((*chaining).id == deleteID){
+      hashTable[location] = NULL;
+		delete chaining;
+		cout << "deleted" << endl;
+    }
+      else{
+	cout << "invalid ID input" << endl;
+      }
+  }
+  else{
+    if((*chaining).id == deleteID){
+      hashTable[location] = (*chaining).connection;
+      delete chaining;
+      cout << "deleted" << endl;;
+    }
+    else{
+      bool invalid = true;
+      while(chaining != NULL && (*chaining).connection != NULL){
+	if((*(*chaining).connection).id == deleteID){
+	Student* deleteThis = (*chaining).connection;
+	(*chaining).connection = (*deleteThis).connection;
+	delete deleteThis;
+	invalid = false;
+	cout << "deleted" << endl;
+      }
+      chaining = (*chaining).connection;
+    }
+    if(invalid){
+      cout << "invalid ID input" << endl;
+	    }
+  }
+  }
 }
+ else{
+   cout << "invalid ID input" << endl;
+   
+ }
+}
+
 void Print(Student** hashTable, int size){ // prints all the students in the vector
   int* numberOfStudents = new int;
   (*numberOfStudents) = 0;
@@ -249,7 +300,8 @@ int initialhash(int ID, int size){
 Student** ReHash(Student** hashTable, int& size){
   int loop = size;
   bool collision = false;
-  size = size + 100;
+   size = size + 100;
+   //    size = size * 2;
   Student** newHashTable = new Student*[size];
     for(int i = 0; i < size; i++) {
     newHashTable[i] = NULL; 
@@ -274,7 +326,7 @@ Student** ReHash(Student** hashTable, int& size){
 	    (*chaining).connection = studentHolder;
 	    counter++;
 	    if(counter > 2){
-	      collision = true;
+	        collision = true;
 	    }
 	  }
 	  studentHolder = connectionHolder;
