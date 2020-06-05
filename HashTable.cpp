@@ -4,6 +4,7 @@ Hash Table By Andrew Thomas 6/4/2020  Mr.Galbriath's C++ class. This code has a 
 // source: https://www.hackerearth.com/practice/data-structures/hash-tables/basics-of-hash-tables/tutorial/
 #include <iostream> // initializes libraries
 #include <cstring>
+#include <cstdlib>
 //#include <vector>
 #include <cmath>
 #include <iomanip>
